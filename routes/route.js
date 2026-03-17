@@ -1,36 +1,24 @@
 
 const express = require("express");
-const fs = require("fs");
-const path = require("path");
+const supabase = require("../supabase");
 
 const app = express.Router();
-const dataFile = path.join(__dirname, "../data.json");
 
-// Helper function to read data from JSON
-const readData = () => {
-    try {
-        const data = fs.readFileSync(dataFile, "utf-8");
-        return JSON.parse(data);
-    } catch (err) {
-        return [];
-    }   
-};
-
-// Helper function to write data to JSON
-const writeData = (data) => {
-    fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
-};
-
-app.get('/',(req,res) => {
-    res.status(200).send(JSON.stringify('welcome Stephen !')); 
+app.get('/', (req,res) => {
+    res.status(200).send(JSON.stringify('welcome Stephen !'));
 });
 
-app.get('/api/get', (req,res) => {
+app.get('/api/get', async (req, res) => {
     try {
-        const contacts = readData();
+        const { data, error } = await supabase
+            .from('contacts')
+            .select('*');
+
+        if (error) throw error;
+
         res.status(200).json({
             message: "All contacts",
-            data: contacts 
+            data: data
         });
     } catch (err) {
         res.status(500).json({
@@ -41,27 +29,29 @@ app.get('/api/get', (req,res) => {
 })
     
 // POST - Create a new contact
-app.post("/api/contact", (req, res) => {  
+app.post("/api/contact", async (req, res) => {  
     try {   
         const { name, company, website, email, interest, phone } = req.body;
 
-        const newContact = {
-            id: Date.now(),
-            name, 
-            company,
-            website,
-            email,
-            interest,
-            phone
-        };
+        const { data, error } = await supabase
+            .from('contacts')
+            .insert([
+                {
+                    name,
+                    company,
+                    website,
+                    email,
+                    interest,
+                    phone
+                }
+            ])
+            .select();
 
-        const contacts = readData();
-        contacts.push(newContact);
-        writeData(contacts);
+        if (error) throw error;
 
         res.status(201).json({
             message: "Contact created successfully",
-            data: newContact
+            data: data[0]
         });
     } catch (err) {
         res.status(500).json({
@@ -72,12 +62,17 @@ app.post("/api/contact", (req, res) => {
 });
 
 // GET - Get all contacts
-app.get("/contact", (req, res) => {
+app.get("/contact", async (req, res) => {
     try {
-        const contacts = readData();
+        const { data, error } = await supabase
+            .from('contacts')
+            .select('*');
+
+        if (error) throw error;
+
         res.status(200).json({
             message: "Contacts retrieved successfully",
-            data: contacts
+            data: data
         });
     } catch (err) {
         res.status(500).json({
@@ -88,4 +83,5 @@ app.get("/contact", (req, res) => {
 });
 
 module.exports = app;
+
 

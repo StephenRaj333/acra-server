@@ -1,9 +1,10 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const cors = require('cors');
-const routes = require('./routes/route');
 
 dotenv.config();
+
+const cors = require('cors');
+const routes = require('./routes/route');
 
 const Port = process.env.Port;  
 const app = express();
@@ -18,5 +19,5 @@ app.use(routes);
 
 app.listen(Port,() => {
     console.log(`Server Running of Port ${Port}`);
-    console.log('Using JSON file storage (data.json)');
+    console.log('Connected to Supabase!');
 })
