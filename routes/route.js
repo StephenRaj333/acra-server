@@ -22,10 +22,10 @@ const writeData = (data) => {
 };
 
 app.get('/',(req,res) => {
-    res.send('Welcome Stephen !');
-})
+    res.status(200).send(JSON.stringify('welcome Stephen !')); 
+});
 
-app.get('/get', (req,res) => {
+app.get('/api/get', (req,res) => {
     try {
         const contacts = readData();
         res.status(200).json({
@@ -41,7 +41,7 @@ app.get('/get', (req,res) => {
 })
     
 // POST - Create a new contact
-app.post("/contact", (req, res) => {  
+app.post("/api/contact", (req, res) => {  
     try {   
         const { name, company, website, email, interest, phone } = req.body;
 
