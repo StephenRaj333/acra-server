@@ -82,6 +82,31 @@ app.get("/contact", async (req, res) => {
     }
 });
 
+// DELETE - Delete a contact by ID
+app.delete("/api/contact/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const { data, error } = await supabase
+            .from('contacts')
+            .delete()
+            .eq('id', id)
+            .select();
+
+        if (error) throw error; 
+
+        res.status(200).json({
+            message: "Contact deleted successfully",
+            data: data
+        });
+    } catch (err) {
+        res.status(500).json({
+            message: "Error deleting contact",
+            error: err.message
+        });
+    }
+});
+
 module.exports = app;
 
 
