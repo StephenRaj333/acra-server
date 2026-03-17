@@ -21,6 +21,10 @@ const writeData = (data) => {
     fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
 };
 
+app.get('/',(req,res) => {
+    res.send('Welcome Stephen !');
+})
+
 app.get('/get', (req,res) => {
     try {
         const contacts = readData();
